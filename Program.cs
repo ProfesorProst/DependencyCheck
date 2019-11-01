@@ -39,20 +39,15 @@ namespace DependencyCheck
 
             using (Context db = new Context())
             {
-                // создаем два объекта User
-                VulnerabilityDB user1 = new VulnerabilityDB { name = "1" };
-
-                // добавляем их в бд
-                db.vulnerabilityDBs.Add(user1);
+                db.dependencyVulnerabilityDBs.AddRange(dependencyVulnerabilityDBs);
                 db.SaveChanges();
-                Console.WriteLine("Объекты успешно сохранены");
 
-                // получаем объекты из бд и выводим на консоль
-                var users = db.vulnerabilityDBs;
+
+                var users = db.dependencyVulnerabilityDBs;
                 Console.WriteLine("Список объектов:");
-                foreach (VulnerabilityDB u in users)
+                foreach (DependencyVulnerabilityDB u in users)
                 {
-                    Console.WriteLine("{0}", u.name);
+                    Console.WriteLine("{0}.{1} - {2}", u.id, u.dependency, u.vulnerabilityDBs);
                 }
             }
             Console.Read();
