@@ -17,6 +17,7 @@ namespace DependencyCheck
 
     public class VulnerabilityDB
     {
+        public int id { get; set; }
         public string name { get; set; }
         public double num1 { get; set; }
         public double num2 { get; set; }
@@ -28,6 +29,7 @@ namespace DependencyCheck
 
     public class DependencyDB
     {
+        public int id { get; set; }
         public string name { get; set; }
         public string fileName { get; set; }
         public string filePath { get; set; }

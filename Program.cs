@@ -13,33 +13,16 @@ namespace DependencyCheck
     {
         static void Main(string[] args)
         {
+            string baseDirectory = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
             // dependency-check.bat --project "index" --scan "C:\Users\profe\Desktop\index" --format "JSON"
-            string strCmdText = " cd " + System.AppContext.BaseDirectory + " ";
+            string strCmdText = baseDirectory + "resoures\\dependency-check\\bin\\dependency-check.bat " +
+                "--project \"index\" --scan \"C:\\Users\\profe\\Desktop\\index\" --out "+ baseDirectory+" --format \"JSON\"";
 
-            //executeCommand(strCmdText,true, false);
-            //executeCommand("dependency-check.bat --project \"index\" --scan \"C: \\Users\\profe\\Desktop\\index\" --format \"JSON\"", true, false);
-
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            process.StartInfo = startInfo;
-            startInfo.FileName = "cmd.exe";
-
-            //startInfo.Arguments = " cd " + System.AppContext.BaseDirectory + " ";
-
-            startInfo.Arguments = "/c C:\\Users\\profe\\source\\repos\\DependencyCheck\\resoures\\dependency-check\\bin\\dependency-check.bat --project \"index\" --scan \"C:\\Users\\profe\\Desktop\\index\" --format \"JSON\"";
-            process.Start();
-            Console.WriteLine(startInfo.Arguments);
-
-            startInfo.Arguments = "/C dir";
-            process.Start();
-            Console.WriteLine(startInfo.Arguments);
-
-
-            string msg = File.ReadAllText(@"C:\Users\profe\source\repos\DependencyCheck\resoures\dependency-check\bin\dependency-check-report.json");
-            //convert to json instance
+            //executeCommand(strCmdText);
+            Console.WriteLine("Done");
+                   
+            string msg = File.ReadAllText(baseDirectory + "dependency-check-report.json");
             JObject obj = JObject.Parse(msg);
-            //return event array
             var token = (JArray)obj.SelectToken("dependencies");
 
             Welcome test = JsonConvert.DeserializeObject<Welcome>(msg);
@@ -53,7 +36,27 @@ namespace DependencyCheck
                     timeSpan = DateTime.Now
                 })).ToList();
 
+
+            using (Context db = new Context())
+            {
+                // создаем два объекта User
+                VulnerabilityDB user1 = new VulnerabilityDB { name = "1" };
+
+                // добавляем их в бд
+                db.vulnerabilityDBs.Add(user1);
+                db.SaveChanges();
+                Console.WriteLine("Объекты успешно сохранены");
+
+                // получаем объекты из бд и выводим на консоль
+                var users = db.vulnerabilityDBs;
+                Console.WriteLine("Список объектов:");
+                foreach (VulnerabilityDB u in users)
+                {
+                    Console.WriteLine("{0}", u.name);
+                }
+            }
             Console.Read();
+
         }
 
         internal static void executeCommand(string command, bool waitForExit = true, bool hideWindow = true, bool runAsAdministrator = false)
