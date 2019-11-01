@@ -14,5 +14,11 @@ namespace DependencyCheck
         public DbSet<DependencyVulnerabilityDB> dependencyVulnerabilityDBs { get; set; }
         public DbSet<DependencyDB> dependencyDBs { get; set; }
         public DbSet<VulnerabilityDB> vulnerabilityDBs { get; set; }
+
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

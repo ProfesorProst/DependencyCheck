@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace DependencyCheck
             string baseDirectory = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
             // dependency-check.bat --project "index" --scan "C:\Users\profe\Desktop\index" --format "JSON"
             string strCmdText = baseDirectory + "resoures\\dependency-check\\bin\\dependency-check.bat " +
-                "--project \"index\" --scan \"C:\\Users\\profe\\Desktop\\index\" --out "+ baseDirectory+" --format \"JSON\"";
+                "--project \"index\" --scan \"C:\\Users\\profe\\Desktop\\index\" --out "+ baseDirectory+" --format \"HTML\"";
 
             //executeCommand(strCmdText);
             Console.WriteLine("Done");
@@ -32,22 +33,38 @@ namespace DependencyCheck
                 {
                     dependency = (new DependencyDB { fileName = x.FileName, filePath = x.FilePath, name = x.Packages.First().Id }),
                     vulnerabilityDBs = x.Vulnerabilities.Select(x => new VulnerabilityDB
-                    { name = x.Name, num1 = x.Cvssv3.BaseScore, description = x.Description }).ToList(),
-                    timeSpan = DateTime.Now
+                    { name = x.Name, num1 = x.Cvssv3.BaseScore, description = x.Description }).ToList()
                 })).ToList();
 
-
+            Console.WriteLine(dependencyVulnerabilityDBs.First().id);
             using (Context db = new Context())
             {
-                db.dependencyVulnerabilityDBs.AddRange(dependencyVulnerabilityDBs);
-                db.SaveChanges();
+                
+                /*
+                var depvuln = (from depvul in dependencyVulnerabilityDBs
+                              from depvulne in (db.dependencyVulnerabilityDBs).ToList()
+                               where depvul.timeSpan != depvulne.timeSpan && depvul.dependency != depvulne.dependency
+                              select depvulne).ToList();
+                 */
+                var depvuln = db.dependencyVulnerabilityDBs.ToList();
+
+                /*
+                foreach (DependencyVulnerabilityDB dependencyVulnerabilityDB in dependencyVulnerabilityDBs)
+                    db.dependencyVulnerabilityDBs.AddOrUpdate(dependencyVulnerabilityDB);
+                */
+                try
+                {
+                    db.dependencyDBs.Add(dependencyVulnerabilityDBs.First().dependency);
+                    db.SaveChanges();
+                }
+                catch { Console.WriteLine("lol"); }
 
 
                 var users = db.dependencyVulnerabilityDBs;
                 Console.WriteLine("Список объектов:");
                 foreach (DependencyVulnerabilityDB u in users)
                 {
-                    Console.WriteLine("{0}.{1} - {2}", u.id, u.dependency, u.vulnerabilityDBs);
+                    Console.WriteLine("{0}.{1} - {2}", u.id, u.dependency.name, u.vulnerabilityDBs);
                 }
             }
             Console.Read();
