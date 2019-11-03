@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-
-using System.Globalization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
-namespace DependencyCheck
+namespace DependencyCheck.Models
 {
 
-    public partial class Welcome
+    public partial class GeneralInfo
     {
         [JsonProperty("reportSchema")]
         public string ReportSchema { get; set; }
